@@ -1,0 +1,609 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Fluentigo — языковая школа</title>
+  <link rel="stylesheet" href="./styles.css" />
+  <link rel="stylesheet" href="./mobile-fixes.css" />
+
+  <style>
+    /* Better anchor positioning under fixed topbar */
+    html { scroll-behavior: smooth; }
+    /* Default fallback; JS will refine using --topbar-h */
+    section[id] { scroll-margin-top: calc(var(--topbar-h, 72px) + 14px); }
+    @media (max-width: 900px){
+      section[id] { scroll-margin-top: calc(var(--topbar-h, 64px) + 14px); }
+    }
+  </style>
+
+</head>
+
+<body>
+  <header class="topbar">
+    <div class="container topbar-row">
+      <a class="brand" href="./index.html" aria-label="Fluentigo">
+        <span class="brand-dot"></span>
+        <span class="brand-name" id="siteName">Fluentigo</span>
+      </a>
+
+      <!-- Desktop: inline. Mobile: turns into a right-side drawer (see styles.css) -->
+      <div class="topbar-actions" aria-label="Меню">
+        <div class="drawer-top">
+          <button class="menu-close-btn" type="button" aria-label="Закрыть меню">✕</button>
+        </div>
+
+        <nav class="nav" aria-label="Навигация">
+          <a href="#languages" data-i18n="nav_languages">Языки</a>
+          <a href="#about" data-i18n="nav_about">Кто мы?</a>
+<a href="#pricing" data-i18n="nav_pricing">Расценки</a>
+          <a href="#contact" data-i18n="nav_contact">Контакты</a>
+        </nav>
+        <div class="ui-switch" aria-label="Выбор языка интерфейса">
+          <button class="ui-pill" id="uiRu" type="button" aria-pressed="true" title="Русский">
+            <span class="flag-mini"><img src="./assets/flags/ru.svg" alt="RU"></span>
+            <span>RU</span>
+          </button>
+          <button class="ui-pill" id="uiUa" type="button" aria-pressed="false" title="Українська">
+            <span class="flag-mini"><img src="./assets/flags/ua.svg" alt="UA"></span>
+            <span>UA</span>
+          </button>
+        </div>
+      </div>
+
+      <button class="menu-btn" type="button" aria-label="Открыть меню" aria-expanded="false">
+        <span></span>
+      </button>
+    </div>
+  </header>
+
+  <div class="menu-backdrop" aria-hidden="true"></div>
+
+  <main>
+    <section class="section hero" id="heroSection">
+      <div class="container hero-grid">
+        <div class="hero-card">
+          <p class="hero-kicker" id="heroKicker"></p>
+          <h1 id="heroTitle"></h1>
+          <div class="hero-quotes" id="heroQuotes"></div>
+
+          <div class="hero-actions">
+            <!-- CTA goes to language selection (not contacts) -->
+            <a class="btn" href="#languages" data-i18n="btn_enroll">Записаться на курсы</a>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section" id="languages">
+      <div class="container">
+        <div class="section-head">
+          <h2 data-i18n="languages_title">Выберите язык</h2>
+          <p class="muted" data-i18n="languages_subtitle">Наведите — увидите цвет страны. Нажмите — откроется отдельная страница.</p>
+        </div>
+        <div class="lang-grid" id="langGrid"></div>
+      </div>
+    </section>
+
+    <section class="section" id="about">
+      <div class="container">
+        <div class="panel">
+          <h2 id="aboutTitle"></h2>
+          <p id="aboutText" class="text"></p>
+        </div>
+      </div>
+    </section>
+
+    <section class="section" id="why">
+      <div class="container">
+        <div class="section-head">
+          <h2 data-i18n="why_title">Почему выбирают нас?</h2>
+          <p class="muted" data-i18n="why_subtitle">Понятно. Системно. С результатом.</p>
+        </div>
+        <div class="cards" id="whyCards"></div>
+      </div>
+    </section>
+    <section class="section" id="pricing">
+      <div class="container">
+        <div class="section-head">
+          <h2 data-i18n="pricing_title">Расценки и планы</h2>
+          <p class="muted" data-i18n="pricing_subtitle">Выберите формат и длительность — и сравните обычный и премиум.</p>
+        </div>
+
+        <div class="pricing-controls" role="group" aria-label="Формат занятий">
+          <button class="chip" id="typeIndividual" type="button" aria-pressed="true">Индивидуальные</button>
+          <button class="chip" id="typeGroup" type="button" aria-pressed="false">Групповые</button>
+        </div>
+
+        <div class="muted tiny" style="text-align:center; margin-bottom: 12px;" id="discountNote"></div>
+
+        <div class="pricing-carousel">
+          <button class="carousel-arrow" id="pricePrev" type="button" aria-label="Предыдущая длительность">‹</button>
+
+          <div>
+            <div class="duration-pill" id="durationPill">60 минут</div>
+            <div class="duration-tabs" id="durationTabs" aria-label="Длительность урока"></div>
+            <div class="pricing-cards" id="pricingCards"></div>
+          </div>
+
+          <button class="carousel-arrow" id="priceNext" type="button" aria-label="Следующая длительность">›</button>
+        </div>
+
+        <div class="pricing-benefits" id="pricingBenefits"></div>
+
+        <p class="muted tiny" style="text-align:center; margin-top: 12px;" id="pricingNote"></p>
+      </div>
+    </section>
+
+
+    <section class="section" id="contact">
+      <div class="container contact-grid">
+        <div class="panel">
+          <h2 data-i18n="contact_title">Контакты</h2>
+          <p class="text muted" id="contactText"></p>
+
+          <div class="contact-list" id="contactList"></div>
+          <div class="socials" id="socials"></div>
+        </div>
+
+        <form class="panel form"  id="contactForm">
+          <h2 style="margin-top:0;" id="contactFormTitle"></h2>
+          <label>
+            <span id="contactFormNameLabel"></span>
+            <input required type="text" id="contactFormName" />
+          </label>
+          <label>
+            <span id="contactFormPhoneLabel"></span>
+            <input required type="text" id="contactFormPhone" />
+          </label>
+          <label>
+            <span id="contactFormNeedLabel"></span>
+            <textarea rows="4" id="contactFormNeed"></textarea>
+          </label>
+          <button class="btn" type="submit" id="contactFormSubmit"></button>
+          <p class="muted tiny" id="contactFormHelper"></p>
+        </form>
+      </div>
+    </section>
+  </main>
+
+  <footer class="footer">
+    <div class="container footer-row">
+      <div>
+        <div class="muted" id="footerText"></div>
+        <div class="footer-contacts" id="footerContacts"></div>
+      </div>
+      <span class="muted tiny">Fluentigo — Language School</span>
+    </div>
+  </footer>
+
+  <script>
+    const $ = (id) => document.getElementById(id);
+
+    
+    const ICONS = {
+      whatsapp: `<svg class="icon" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M20 12a8 8 0 1 1-2.3-5.7A8 8 0 0 1 20 12Z" stroke="currentColor" stroke-width="2"/><path d="M8 20l1-3" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><path d="M9.5 9.5c.4 2.2 2.8 4.6 5 5" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>`,
+      telegram: `<svg class="icon" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M21 4 3.7 10.7c-.9.4-.9 1.1-.2 1.3l4.5 1.4 1.7 5.2c.2.6.3.6.7.2l2.6-2.5 5 3.7c.9.5 1.5.2 1.7-.8L22 5.3c.2-1.1-.5-1.7-1-1.3Z" fill="currentColor"/></svg>`,
+      instagram: `<svg class="icon" viewBox="0 0 24 24" fill="none" aria-hidden="true"><rect x="4" y="4" width="16" height="16" rx="5" stroke="currentColor" stroke-width="2"/><path d="M8 12a4 4 0 1 0 8 0 4 4 0 0 0-8 0Z" stroke="currentColor" stroke-width="2"/><path d="M17.5 6.6h.01" stroke="currentColor" stroke-width="3" stroke-linecap="round"/></svg>`,
+      facebook: `<svg class="icon" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M14 9h3V6h-3c-2.2 0-4 1.8-4 4v3H7v3h3v6h3v-6h3l1-3h-4v-3c0-.6.4-1 1-1Z" fill="currentColor"/></svg>`,
+      email: `<svg class="icon" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M4 6h16v12H4V6Z" stroke="currentColor" stroke-width="2" /><path d="M4 7l8 6 8-6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>`
+    };
+
+    function inferIconKey(link){
+      const label = (link.label || '').toLowerCase();
+      const url = (link.url || '').toLowerCase();
+      if (url.startsWith('mailto:') || label.includes('email')) return 'email';
+      if (label.includes('whatsapp')) return 'whatsapp';
+      if (label.includes('telegram')) return 'telegram';
+      if (label.includes('instagram')) return 'instagram';
+      if (label.includes('facebook')) return 'facebook';
+      return 'email';
+    }
+
+    function makeSocialIcon(link, isFooter=false){
+      const key = inferIconKey(link);
+      const a = el('a', {
+        class: isFooter ? 'footer-link social-icon' : 'social-icon',
+        href: link.url,
+        target: '_blank',
+        rel: 'noopener',
+        title: link.label
+      });
+      a.innerHTML = ICONS[key] + `<span>${link.label}</span>`;
+      return a;
+    }
+
+    function qp(name){ return new URL(location.href).searchParams.get(name); }
+    function getUI(){
+      return qp('ui') || localStorage.getItem('ui') || 'ru';
+    }
+    function setUI(ui){
+      localStorage.setItem('ui', ui);
+      $('uiRu').setAttribute('aria-pressed', ui==='ru' ? 'true':'false');
+      $('uiUa').setAttribute('aria-pressed', ui==='ua' ? 'true':'false');
+      document.documentElement.lang = ui==='ua' ? 'uk' : 'ru';
+      // tiny i18n for nav and pricing
+      const I = {
+        ru: {
+          nav_languages:'Языки',nav_about:'Кто мы?',nav_why:'Почему мы?',nav_pricing:'Расценки',nav_contact:'Контакты',
+          btn_enroll:'Записаться на курсы',
+          languages_title:'Выберите язык',
+          languages_subtitle:'Наведите — увидите цвет страны. Нажмите — откроется отдельная страница.',
+          why_title:'Почему выбирают нас?',
+          why_subtitle:'Понятно. Системно. С результатом.',
+          contact_title:'Контакты',
+          pricing_title:'Расценки и планы',
+          pricing_subtitle:'Выберите формат и длительность — и сравните обычный и премиум.'
+        },
+        ua: {
+          nav_languages:'Мови',nav_about:'Хто ми?',nav_why:'Чому ми?',nav_pricing:'Ціни',nav_contact:'Контакти',
+          btn_enroll:'Записатися на курси',
+          languages_title:'Оберіть мову',
+          languages_subtitle:'Наведіть — побачите колір країни. Натисніть — відкриється окрема сторінка.',
+          why_title:'Чому обирають нас?',
+          why_subtitle:'Зрозуміло. Системно. З результатом.',
+          contact_title:'Контакти',
+          pricing_title:'Ціни та плани',
+          pricing_subtitle:'Оберіть формат і тривалість — та порівняйте звичайний і преміум.'
+        }
+      };
+      document.querySelectorAll('[data-i18n]').forEach(n=>{
+        const k=n.getAttribute('data-i18n');
+        if(I[ui] && I[ui][k]) n.textContent = I[ui][k];
+      });
+    }
+
+    // --- i18n helper: supports both plain strings and {ru,ua} objects in data.json
+    function pick(v, ui=getUI()){
+      if (v == null) return '';
+      if (typeof v === 'string' || typeof v === 'number' || typeof v === 'boolean') return String(v);
+      if (Array.isArray(v)) return v.map(x => pick(x, ui));
+      if (typeof v === 'object') return (v[ui] ?? v.ua ?? v.uk ?? v.ru ?? '');
+      return String(v);
+    }
+
+function el(tag, attrs = {}, children = []) {
+      const n = document.createElement(tag);
+      for (const [k, v] of Object.entries(attrs)) {
+        if (k === 'class') n.className = v;
+        else n.setAttribute(k, v);
+      }
+      for (const c of children) n.appendChild(typeof c === 'string' ? document.createTextNode(c) : c);
+      return n;
+    }
+
+    function applyTheme(theme) {
+      const r = document.documentElement;
+      const bgImage = theme.backgroundImage ? `url("${theme.backgroundImage}")` : 'none';
+      r.style.setProperty('--page-bg', theme.pageBg);
+      r.style.setProperty('--page-bg-image', bgImage);
+      r.style.setProperty('--text', theme.text);
+      r.style.setProperty('--panel-bg', theme.panelBg);
+      r.style.setProperty('--topbar-bg', theme.topbarBg);
+      r.style.setProperty('--topbar-text', theme.topbarText);
+    }
+
+    function renderFooter(data) {
+      $('footerText').textContent = pick(data.site.footerText);
+      const fc = $('footerContacts');
+      fc.innerHTML = '';
+      (data.contact.items || []).forEach(i => {
+        fc.appendChild(el('span', { class: 'footer-link' }, [`${pick(i.label)}: ${i.value}`]));
+      });
+      (data.contact.links || []).forEach(l => { fc.appendChild(makeSocialIcon(l, true)); });
+    }
+
+    function renderHome(data) {
+      applyTheme(data.site.defaultTheme);
+      $('siteName').textContent = data.site.name;
+
+      $('heroKicker').textContent = pick(data.hero.kicker);
+      $('heroTitle').textContent = pick(data.hero.title);
+      $('heroSection').style.backgroundImage = `url("${data.hero.backgroundImage}")`;
+
+      const qWrap = $('heroQuotes');
+      qWrap.innerHTML = '';
+      data.hero.quotes.forEach(q => qWrap.appendChild(el('div', { class: 'quote' }, [pick(q)])));
+
+      const lg = $('langGrid');
+      lg.innerHTML = '';
+      data.languages.forEach(lang => {
+        lg.appendChild(
+          el('a', {
+            class: 'lang-card',
+            href: `./language.html?lang=${encodeURIComponent(lang.id)}&ui=${encodeURIComponent(getUI())}`,
+            style: `--hover:${lang.hoverColor}`
+          }, [
+            (function(){
+              const f = el('div', { class: 'lang-flag' });
+              if (typeof lang.flag === 'string' && (lang.flag.endsWith('.svg') || lang.flag.endsWith('.png') || lang.flag.endsWith('.jpg') || lang.flag.endsWith('.webp'))) {
+                f.appendChild(el('img', { class:'flag-img', src: lang.flag, alt: pick(lang.name) }));
+              } else {
+                f.textContent = lang.flag || '';
+              }
+              return f;
+            })(),
+            el('div', { class: 'lang-label' }, [pick(lang.name)]),
+            el('div', { class: 'muted tiny' }, [pick(lang.short)])
+          ])
+        );
+      });
+
+      $('aboutTitle').textContent = pick(data.about.title);
+      $('aboutText').textContent = pick(data.about.text);
+
+      const wc = $('whyCards');
+      wc.innerHTML = '';
+      data.why.cards.forEach(c => {
+        wc.appendChild(el('div', { class: 'card' }, [
+          el('div', { class: 'card-title' }, [pick(c.title)]),
+          el('div', { class: 'muted' }, [pick(c.text)])
+        ]));
+      });
+
+      $('contactText').textContent = pick(data.contact.text);
+
+      const cl = $('contactList');
+      cl.innerHTML = '';
+      data.contact.items.forEach(i => {
+        cl.appendChild(el('div', { class: 'contact-item' }, [
+          el('span', { class: 'contact-k' }, [pick(i.label) + ':']),
+          el('span', {}, [i.value])
+        ]));
+      });
+
+      const socials = $('socials');
+      socials.innerHTML = '';
+      data.contact.links.forEach(s => { socials.appendChild(makeSocialIcon(s)); });
+
+
+      // Contact form i18n (title, labels, placeholders, button, helper, alert)
+      const f = data.contact?.form || {};
+      $('contactFormTitle').textContent = pick(f.title);
+      $('contactFormNameLabel').textContent = pick(f.nameLabel);
+      $('contactFormPhoneLabel').textContent = pick(f.phoneLabel);
+      $('contactFormNeedLabel').textContent = pick(f.needLabel);
+      $('contactFormName').setAttribute('placeholder', pick(f.namePlaceholder));
+      $('contactFormPhone').setAttribute('placeholder', pick(f.phonePlaceholder));
+      $('contactFormNeed').setAttribute('placeholder', pick(f.needPlaceholder));
+      $('contactFormSubmit').textContent = pick(f.submit);
+      $('contactFormHelper').textContent = pick(f.helper);
+
+      const formEl = $('contactForm');
+      if (formEl && !formEl.__bound){
+        formEl.__bound = true;
+        formEl.addEventListener('submit', (e)=>{
+          e.preventDefault();
+          alert(pick(f.alert));
+          formEl.reset();
+        });
+      }
+
+      renderFooter(data);
+    }
+
+    
+    function renderPricing(data){
+      const ui = getUI();
+      const P = data.pricingInteractive;
+      if (!P) return;
+
+      let type = 'individual';
+      let idx = 0;
+
+      const btnInd = $('typeIndividual');
+      const btnGrp = $('typeGroup');
+
+      function setType(t){
+        type = t;
+        idx = 0; // reset to first duration (60)
+        btnInd.setAttribute('aria-pressed', t==='individual' ? 'true':'false');
+        btnGrp.setAttribute('aria-pressed', t==='group' ? 'true':'false');
+        btnInd.textContent = P.types.individual.label[ui] || P.types.individual.label.ru;
+        btnGrp.textContent = P.types.group.label[ui] || P.types.group.label.ru;
+        draw();
+      }
+
+      function curDuration(){
+        const d = P.types[type].durations[idx % P.types[type].durations.length];
+        return String(d);
+      }
+
+      function draw(){
+        const d = curDuration();
+        const plans = P.types[type].plans[d];
+        $('durationPill').textContent = `${d} ${ui==='ua' ? 'хвилин' : 'минут'}`;
+
+        // Mobile: duration tabs (60/45 etc.)
+        const tabs = $('durationTabs');
+        if (tabs){
+          const durations = P.types[type].durations;
+          tabs.innerHTML = '';
+          durations.slice(0,2).forEach((dur, i2)=>{
+            const b = el('button', {class:'duration-tab' + (String(dur)===d ? ' active':''), type:'button'}, [`${dur} ${ui==='ua' ? 'хв' : 'мин'}`]);
+            b.addEventListener('click', ()=>{ idx = i2; draw(); });
+            tabs.appendChild(b);
+          });
+        }
+
+        $('discountNote').textContent = (P.discountNote?.[ui] || P.discountNote?.ru || '');
+        $('pricingNote').textContent = (P.noteB2C1?.[ui] || P.noteB2C1?.ru || '');
+
+        const wrap = $('pricingCards');
+        wrap.innerHTML = '';
+
+        const cards = [
+          {key:'regular', title: ui==='ua' ? 'Звичайний' : 'Обычный', badge: ui==='ua' ? 'Дізнатися більше' : 'Узнать больше', href: '#pricingBenefits'},
+          {key:'premium', title: ui==='ua' ? 'Преміум' : 'Премиум', badge: ui==='ua' ? 'Дізнатися більше' : 'Узнать больше', href: '#pricingBenefits'}
+        ];
+
+        cards.forEach(c=>{
+          const plan = plans[c.key];
+          const card = el('div', {class:'price-card'});
+          const head = el('div', {class:'pc-head'}, [
+            el('div', {}, [
+              el('div', {class:'pc-title'}, [c.title]),
+              el('div', {class:'muted tiny'}, [ui==='ua' ? 'Порівняння пакунків' : 'Сравнение пакетов'])
+            ]),
+            (function(){
+              const attrs = {class:'pc-badge pc-more', href: c.href};
+              if (!(String(c.href||'').startsWith('#'))){
+                attrs.target = '_blank';
+                attrs.rel = 'noopener';
+              }
+              return el('a', attrs, [c.badge]);
+            })()
+          ]);
+          card.appendChild(head);
+
+          const single = el('div', {class:'pc-single'}, [
+            el('div', {class:'amount'}, [`${plan.single}`]),
+            el('div', {class:'per'}, [`${P.currency} / ${ui==='ua' ? 'урок' : 'урок'}`])
+          ]);
+          card.appendChild(single);
+
+          const table = el('table', {class:'price-table'});
+          const thead = el('thead', {}, [el('tr', {}, [
+            el('th', {}, [ui==='ua' ? 'Пакет' : 'Пакет']),
+            el('th', {}, [ui==='ua' ? 'Ціна/урок' : 'Цена/урок']),
+            el('th', {}, [ui==='ua' ? 'Разом' : 'Итого'])
+          ])]);
+          table.appendChild(thead);
+
+          const tb = el('tbody');
+          plan.packs.forEach(p=>{
+            tb.appendChild(el('tr', {}, [
+              el('td', {}, [`${p.count}`]),
+              el('td', {class:'num'}, [`${p.per}`]),
+              el('td', {class:'num'}, [`${p.total}`])
+            ]));
+          });
+          table.appendChild(tb);
+
+          card.appendChild(table);
+          wrap.appendChild(card);
+        });
+
+        // benefits / differences between Regular and Premium
+        const bWrap = $('pricingBenefits');
+        bWrap.innerHTML = '';
+        const benefits = (P.types[type] && P.types[type].benefits) ? P.types[type].benefits : null;
+
+        function benefitCard(obj, variant){
+          const title = (obj?.title?.[ui] || obj?.title?.ru || '');
+          const isMobile = window.matchMedia('(max-width: 900px)').matches;
+
+          const body = el('div', { class:'benefit-body' });
+
+          (obj.sections || []).forEach(sec=>{
+            body.appendChild(el('div', { class:'benefit-section' }, [
+              el('div', { class:'benefit-sub' }, [(sec.title?.[ui] || sec.title?.ru || '')]),
+              el('ul', { class:'benefit-list' }, (sec.items?.[ui] || sec.items?.ru || []).map(t=> el('li', {}, [t])))
+            ]));
+          });
+
+          let toggleBtn = null;
+          if (isMobile){
+            // collapsed by default on mobile
+            body.style.display = 'none';
+            toggleBtn = el('button', { class:'benefit-toggle', type:'button' }, [ui==='ua' ? 'Розгорнути' : 'Развернуть']);
+            toggleBtn.addEventListener('click', ()=>{
+              const open = body.style.display !== 'none';
+              body.style.display = open ? 'none' : 'block';
+              toggleBtn.textContent = (open ? (ui==='ua' ? 'Розгорнути' : 'Развернуть') : (ui==='ua' ? 'Згорнути' : 'Свернуть'));
+            });
+          }
+
+          const tagText = variant==='premium' ? (ui==='ua'?'Преміум':'Премиум') : (ui==='ua'?'Стандарт':'Стандарт');
+
+          const headRight = isMobile ? toggleBtn : el('div', { class:'benefit-tag' }, [tagText]);
+
+          const card = el('div', { class: `benefit-card ${variant}` }, [
+            el('div', { class:'benefit-head' }, [
+              el('div', { class:'benefit-title' }, [title]),
+              headRight
+            ]),
+            body
+          ]);
+
+          return card;
+        }
+
+        if (benefits){
+          bWrap.appendChild(benefitCard(benefits.regular, 'regular'));
+          bWrap.appendChild(benefitCard(benefits.premium, 'premium'));
+        }
+      }
+
+      $('pricePrev').addEventListener('click', ()=>{ idx = (idx - 1 + P.types[type].durations.length) % P.types[type].durations.length; draw(); });
+      $('priceNext').addEventListener('click', ()=>{ idx = (idx + 1) % P.types[type].durations.length; draw(); });
+
+      btnInd.addEventListener('click', ()=> setType('individual'));
+      btnGrp.addEventListener('click', ()=> setType('group'));
+
+      setType('individual');
+    }
+
+    
+    // --- Smooth anchor scrolling with topbar offset (prevents "half section visible")
+    function updateTopbarVar(){
+      const topbar = document.querySelector('.topbar');
+      const h = topbar ? topbar.offsetHeight : 72;
+      document.documentElement.style.setProperty('--topbar-h', h + 'px');
+      return h;
+    }
+
+    function scrollToHash(hash){
+      if (!hash || hash === '#') return;
+      const target = document.querySelector(hash);
+      if (!target) return;
+      const h = updateTopbarVar();
+      const y = target.getBoundingClientRect().top + window.pageYOffset - (h + 12);
+      window.scrollTo({ top: Math.max(0, y), behavior: 'smooth' });
+    }
+
+    function bindAnchorScrolling(){
+      // Intercept in-page anchor clicks
+      document.querySelectorAll('a[href^="#"]').forEach(a=>{
+        a.addEventListener('click', (e)=>{
+          const href = a.getAttribute('href');
+          if (!href || href === '#') return;
+          e.preventDefault();
+          history.pushState(null, '', href);
+          scrollToHash(href);
+
+          // If mobile drawer is open, close it (mobile-nav.js handles classes; we just click close if present)
+          const closeBtn = document.querySelector('.menu-close-btn');
+          if (closeBtn && getComputedStyle(closeBtn).display !== 'none') {
+            closeBtn.click();
+          }
+        });
+      });
+
+      // On back/forward hash changes
+      window.addEventListener('hashchange', ()=> scrollToHash(location.hash));
+      // On load with hash
+      if (location.hash) {
+        // delay to ensure layout rendered
+        setTimeout(()=> scrollToHash(location.hash), 50);
+      }
+      // Keep offset correct on resize/orientation change
+      window.addEventListener('resize', ()=> updateTopbarVar());
+      updateTopbarVar();
+    }
+
+(async function init() {
+      const res = await fetch('./data.json', { cache: 'no-store' });
+      const data = await res.json();
+      setUI(getUI());
+      $('uiRu').addEventListener('click', ()=>{ location.search = '?ui=ru'; });
+      $('uiUa').addEventListener('click', ()=>{ location.search = '?ui=ua'; });
+      renderHome(data);
+      renderPricing(data);
+      bindAnchorScrolling();
+    })().catch(console.error);
+  </script>
+
+  <script src="./mobile-nav.js"></script>
+</body>
+</html>
